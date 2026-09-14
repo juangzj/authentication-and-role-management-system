@@ -1,23 +1,8 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-import { useAuth } from "../../../../context/use-auth";
-import { useNotification } from "../../../../notifications/use-notification.context";
-
 import { UserEditOwnDataForm } from "../../components/form/UserEditOwnDataForm";
-import { updateOwnUserData } from "../../user.api";
-
-import type { UpdateOwnUserDto } from "../../domain/dtos/update-own-user.dto";
+import { useEditProfile } from "../../hooks";
 
 export function EditProfilePage() {
-  const { user, refreshUser } = useAuth();
-
-  const { showSuccess, showError } = useNotification();
-
-  const navigate = useNavigate();
-
-  const [isLoading, setIsLoading] = useState(false);
+  const { user, isLoading, handleSubmit } = useEditProfile();
 
   if (!user) {
     return (
@@ -27,35 +12,10 @@ export function EditProfilePage() {
     );
   }
 
-  const handleSubmit = async (data: UpdateOwnUserDto) => {
-    setIsLoading(true);
-
-    try {
-      await updateOwnUserData(data);
-
-      await refreshUser();
-
-      showSuccess("Profile updated successfully.");
-
-      navigate("/profile");
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        showError(
-          error.response?.data?.message ?? "Unable to update your profile.",
-        );
-      } else {
-        showError("Unable to update your profile.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <section className="mx-auto w-full max-w-4xl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Edit Profile</h1>
-
         <p className="mt-1 text-sm text-gray-500">
           Update your personal information.
         </p>

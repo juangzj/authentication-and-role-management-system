@@ -75,52 +75,33 @@ export class UserService {
 
   async findAll(query: FindUsersQueryDto): Promise<{
     data: User[];
-    meta: {
-      total: number;
-      page: number;
-      limit: number;
-      totalPages: number;
-    };
+    meta: { total: number; page: number; limit: number; totalPages: number };
   }> {
     const { page = 1, limit = 10, name, email, role } = query;
-
     const skip = (page - 1) * limit;
-
     const queryBuilder = this.userRepository
       .createQueryBuilder('users')
       .skip(skip)
       .take(limit);
-
     if (name) {
       queryBuilder.andWhere(
-        '(LOWER(user.firstName) LIKE LOWER(:name) OR LOWER(user.lastName) LIKE LOWER(:name))',
-        { name: `%${name}` },
+        '(LOWER(users.firstName) LIKE LOWER(:name) OR LOWER(users.lastName) LIKE LOWER(:name))',
+        { name: `%${name}%` },
       );
     }
     if (email) {
-      queryBuilder.andWhere('LOWER(user.email) LIKE LOWER(:email)', {
-        email: `%${email}`,
+      queryBuilder.andWhere('LOWER(users.email) LIKE LOWER(:email)', {
+        email: `%${email}%`,
       });
     }
-
     if (role) {
-      queryBuilder.andWhere('user.role = :role', {
-        role,
-      });
+      queryBuilder.andWhere('users.role = :role', { role });
     }
-
-    queryBuilder.orderBy('user.createdAt', 'DESC');
-
+    queryBuilder.orderBy('users.createdAt', 'DESC');
     const [users, total] = await queryBuilder.getManyAndCount();
-
     return {
       data: users,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
+      meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
     };
   }
 
