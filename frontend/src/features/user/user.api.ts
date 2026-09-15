@@ -1,0 +1,38 @@
+import { api } from "../../api/axios";
+import type { User } from "./domain/entities/user.entity";
+import type { UpdateOwnUserDto } from "./domain/dtos/update-own-user.dto";
+import type { UpdateUserDto } from "./domain/dtos/update-user.dto";
+import type { UserListQuery } from "./types/pagination/user-list-query.type";
+import type { UserListResponse } from "./types/pagination/user-list-response.type";
+import type { CreateUserDto } from "./domain/dtos/create-user.dto";
+
+export async function findAll(
+  params: Partial<UserListQuery> = {},
+): Promise<UserListResponse> {
+  const response = await api.get<UserListResponse>("/users", { params });
+  return response.data;
+}
+
+export async function updateOwnUserData(updateOwnUserDto: UpdateOwnUserDto) {
+  const response = await api.patch<User>("/users/me", updateOwnUserDto);
+  return response.data;
+}
+
+export async function updateUser(id: string, updateUserDto: UpdateUserDto) {
+  const response = await api.patch<User>(`/users/${id}`, updateUserDto);
+  return response.data;
+}
+
+export async function deleteUser(id: string) {
+  const response = await api.delete(`/users/${id}`);
+  return response.data;
+}
+
+export async function getUserById(id: string) {
+  const response = await api.get(`/users/${id}`);
+  return response;
+}
+export async function createUser(createUserDto: CreateUserDto) {
+  const response = await api.post("/users", createUserDto);
+  return response;
+}
