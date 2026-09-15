@@ -4,6 +4,7 @@ import type { UpdateOwnUserDto } from "./domain/dtos/update-own-user.dto";
 import type { UpdateUserDto } from "./domain/dtos/update-user.dto";
 import type { UserListQuery } from "./types/pagination/user-list-query.type";
 import type { UserListResponse } from "./types/pagination/user-list-response.type";
+import type { CreateUserDto } from "./domain/dtos/create-user.dto";
 
 export async function findAll(
   params: Partial<UserListQuery> = {},
@@ -29,5 +30,9 @@ export async function deleteUser(id: string) {
 
 export async function getUserById(id: string) {
   const response = await api.get(`/users/${id}`);
+  return response;
+}
+export async function createUser(createUserDto: CreateUserDto) {
+  const response = await api.post("/users", createUserDto);
   return response;
 }

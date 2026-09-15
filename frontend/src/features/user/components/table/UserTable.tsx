@@ -6,6 +6,7 @@ import {
   UserTableHeader,
   UserTableRow,
 } from "./";
+import { useNavigate } from "react-router-dom";
 
 export const UserTable = ({
   users,
@@ -14,6 +15,7 @@ export const UserTable = ({
   onSearch,
   onRoleChange,
 }: UserTableProps) => {
+  const navigate = useNavigate();
   const totalUsers = pagination?.total ?? 0;
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -47,11 +49,11 @@ export const UserTable = ({
           </div>{" "}
           <button
             type="button"
+            onClick={() => navigate("/users/create")}
             className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
           >
-            {" "}
-            Add user{" "}
-          </button>{" "}
+            Add user
+          </button>
         </div>{" "}
         {/* Filters */}{" "}
         <UserTableFilters onSearch={onSearch} onRoleChange={onRoleChange} />{" "}

@@ -1,38 +1,34 @@
 import { useState } from "react";
-import axios from "axios";
-import { Button } from "../../../../components/button/Button";
+import { useNotification } from "../../../../notifications/use-notification.context";
+import type { CreateUserDto } from "../../domain/dtos/create-user.dto";
 import { UserBasicFields } from "../fields/user/UserBasciFields";
 import { PasswordFields } from "../fields/user/PasswordFields";
-import { useNotification } from "../../../../notifications/use-notification.context";
-import { register } from "../../../auth/auth.api";
-import type { RegisterUserDto } from "../../domain/dtos/register-user.dto";
+import { Button } from "../../../../components/button/Button";
+import { createUser } from "../../user.api";
+import axios from "axios";
 
-const initialFormData: RegisterUserDto = {
+const initialFormData: CreateUserDto = {
   firstName: "",
   lastName: "",
   email: "",
   password: "",
-  confirmPassword: "",
 };
-
-export function UserRegisterForm() {
+export function UserCreateForm() {
   const { showSuccess, showError } = useNotification();
-  const [formData, setFormData] = useState<RegisterUserDto>(initialFormData);
-  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState<CreateUserDto>(initialFormData);
+  const [isLoading, setIsloading] = useState(false);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((previousData) => ({ ...previousData, [name]: value }));
   };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      showError("Passwords do not match.");
-      return;
-    }
-    setIsLoading(true);
+    setIsloading(true);
     try {
-      await register(formData);
-      showSuccess("User registered successfully.");
+      await createUser(formData);
+      showSuccess("User created succesfully");
       setFormData(initialFormData);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -45,7 +41,7 @@ export function UserRegisterForm() {
         showError("Something went wrong. Please try again.");
       }
     } finally {
-      setIsLoading(false);
+      setIsloading(false);
     }
   };
   return (
@@ -60,8 +56,7 @@ export function UserRegisterForm() {
       />{" "}
       <PasswordFields
         password={formData.password}
-        confirmPassword={formData.confirmPassword}
-        showConfirmPassword
+        showConfirmPassword={false}
         isLoading={isLoading}
         onChange={handleChange}
       />{" "}
@@ -73,7 +68,7 @@ export function UserRegisterForm() {
         disabled={isLoading}
       >
         {" "}
-        {isLoading ? "Creating account..." : "Register"}{" "}
+        {isLoading ? "Creating account..." : "Create User"}{" "}
       </Button>{" "}
     </form>
   );
